@@ -8,10 +8,15 @@ namespace ErikLieben.AspNet.Identity
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
     using Common;
     using Data.Factory;
+
+    using ErikLieben.AspNet.Identity.Interfaces;
+    using ErikLieben.Data.Projection;
+
     using Microsoft.AspNet.Identity;
     using Specification;
 
@@ -21,7 +26,8 @@ namespace ErikLieben.AspNet.Identity
     /// <typeparam name="TUser">The type of the user object.</typeparam>
     /// <typeparam name="TKey">The type of the key of the user object.</typeparam>
     public class RepositoryIdentityStore<TUser, TKey> : 
-        IUserLoginStore<TUser, TKey>
+        IUserLoginStore<TUser, TKey>,
+        IUserClaimStore<TUser, TKey>
 
         where TUser : class, IUser<TKey>
     {
@@ -243,7 +249,7 @@ namespace ErikLieben.AspNet.Identity
                 return await Task.FromResult(
                     repository
                         .Find(new UserLoginByUserKeySpecification<TKey>(user.Id), null)
-                        .MapAllTo<UserLoginInfo, IUserLogin<TKey>>()
+                        .Project().To<UserLoginInfo>()
                         .ToList());
             }
         }
@@ -278,6 +284,82 @@ namespace ErikLieben.AspNet.Identity
                 var repositoryUser = this.repositoryFactory.Create<TUser>(uow);
                 return await Task.FromResult(
                     repositoryUser.FindFirstOrDefault(new UserByUserIdSpecification<TKey, TUser>(userLogin.UserId), null));
+            }
+        }
+
+        /// <summary>
+        /// Gets the claims for the given user asynchronous.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>List of claims belonging to this user</returns>
+        public async Task<IList<Claim>> GetClaimsAsync(TUser user)
+        {
+            Guard
+                .With<ArgumentNullException>
+                .Against(user == null)
+                .Say("user");
+
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserClaim<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserClaim<TKey>>(uow);
+                return await Task.FromResult(
+                    repository
+                        .Find(new UserClaimByUserKeySpecification<TKey>(user.Id), null)
+                        .Project().To<Claim>()
+                        .ToList());
+            }
+        }
+
+        /// <summary>
+        /// add a claim to the given user asynchronous.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="claim">The claim.</param>
+        /// <returns>Task that performs the asynchronous adding.</returns>
+        public async Task AddClaimAsync(TUser user, Claim claim)
+        {
+            Guard
+                .With<ArgumentNullException>
+                .Against(user == null)
+                .Say("user");
+
+            Guard
+                .With<ArgumentNullException>
+                .Against(claim == null)
+                .Say("claim");
+
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserClaim<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserClaim<TKey>>(uow);
+                repository.Add(this.dependencyFactory.CreateObject<IUserClaim<TKey>>(user.Id));
+                await uow.CommitAsync(new CancellationToken());
+            }
+        }
+
+        /// <summary>
+        /// Removes the claim from the user asynchronous.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="claim">The claim.</param>
+        /// <returns>Task that removes the claim from the user asynchronous.</returns>
+        public async Task RemoveClaimAsync(TUser user, Claim claim)
+        {
+            Guard
+                .With<ArgumentNullException>
+                .Against(user == null)
+                .Say("user");
+
+            Guard
+                .With<ArgumentNullException>
+                .Against(claim == null)
+                .Say("claim");
+
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserClaim<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserClaim<TKey>>(uow);
+                var claimToDelete = repository.FindFirstOrDefault(new UserClaimByUserKeySpecification<TKey>(user.Id), null);
+                repository.Delete(claimToDelete);
+                await uow.CommitAsync(new CancellationToken());
             }
         }
 
