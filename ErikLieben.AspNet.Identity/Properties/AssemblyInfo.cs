@@ -1,4 +1,9 @@
-﻿using System;
+﻿// ***********************************************************************
+// <copyright file="AssemblyInfo.cs" company="Erik Lieben">
+//     Copyright (c) Erik Lieben. All rights reserved.
+// </copyright>
+// ***********************************************************************
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
