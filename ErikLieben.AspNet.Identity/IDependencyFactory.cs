@@ -13,9 +13,9 @@ namespace ErikLieben.AspNet.Identity
         /// <summary>
         /// Creates the object.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="args">The arguments.</param>
-        /// <returns>T.</returns>
+        /// <typeparam name="T">Type of object wanted</typeparam>
+        /// <param name="args">The constructor arguments to create the object.</param>
+        /// <returns>The object it requires.</returns>
         T CreateObject<T>(params object[] args);
     }
 }

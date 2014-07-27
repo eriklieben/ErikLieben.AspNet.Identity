@@ -3,7 +3,7 @@
 //     Copyright (c) Erik Lieben. All rights reserved.
 // </copyright>
 // ***********************************************************************
-namespace ErikLieben.AspNet.Identity
+namespace ErikLieben.AspNet.Identity.Interfaces
 {
     /// <summary>
     /// Interface IUserLogin

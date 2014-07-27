@@ -9,6 +9,8 @@ namespace ErikLieben.AspNet.Identity.Specification
     using System.Linq.Expressions;
     using Data.Repository;
 
+    using ErikLieben.AspNet.Identity.Interfaces;
+
     /// <summary>
     /// Class UserKeyByUserIdSpecification.
     /// </summary>

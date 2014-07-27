@@ -5,9 +5,10 @@
 // ***********************************************************************
 namespace ErikLieben.AspNet.Identity.Specification
 {
-    using Data.Repository;
     using System;
     using System.Linq.Expressions;
+    using Data.Repository;
+    using Interfaces;
 
     /// <summary>
     /// Class UserLoginInfoByLoginProviderAndLoginKeySpecification. This class cannot be inherited.
@@ -24,7 +25,6 @@ namespace ErikLieben.AspNet.Identity.Specification
         /// The login key
         /// </summary>
         private readonly string loginKey;
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserLoginInfoByLoginProviderAndLoginKeySpecification{TKey}"/> class.
