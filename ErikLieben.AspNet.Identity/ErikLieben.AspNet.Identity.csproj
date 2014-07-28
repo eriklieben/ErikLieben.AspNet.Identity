@@ -66,9 +66,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryIdentityStore.cs" />
     <Compile Include="Specification\UserClaimByUserKeySpecification.cs" />
-    <Compile Include="Specification\UserKeyByUserIdSpecification.cs" />
-    <Compile Include="Specification\UserLoginByUserKeySpecification.cs" />
     <Compile Include="Specification\UserByUserIdSpecification.cs" />
+    <Compile Include="Specification\UserLoginByUserKeySpecification.cs" />
     <Compile Include="Specification\UserByUserNameSpecification.cs" />
     <Compile Include="Specification\UserLoginInfoByLoginProviderAndLoginKeySpecification.cs" />
   </ItemGroup>

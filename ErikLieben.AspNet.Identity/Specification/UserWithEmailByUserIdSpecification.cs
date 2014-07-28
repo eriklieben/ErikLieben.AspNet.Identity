@@ -5,43 +5,25 @@
 // ***********************************************************************
 namespace ErikLieben.AspNet.Identity.Specification
 {
-    using System;
-    using System.Linq.Expressions;
-    using Data.Repository;
-    using Microsoft.AspNet.Identity;
+    using Interfaces;
 
     /// <summary>
     /// User by userId specification
     /// </summary>
     /// <typeparam name="TKey">The type of the key of the user object.</typeparam>
     /// <typeparam name="TUser">The type of the user object.</typeparam>
-    public sealed class UserWithEmailByUserIdSpecification<TKey, TUser> : Specification<TUser>
-        where TUser : class, IUser<TKey>
+    /// <summary>
+    /// Class UserClaimByUserKeySpecification. This class cannot be inherited.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the t key.</typeparam>
+    public sealed class UserWithEmailByUserIdSpecification<TKey> : UserByUserIdSpecification<TKey, IUserWithEmail<TKey>>
     {
         /// <summary>
-        /// The key to search for
+        /// Initializes a new instance of the <see cref="UserClaimByUserKeySpecification{TKey}"/> class.
         /// </summary>
-        private readonly TKey key;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserWithEmailByUserIdSpecification{TKey, TUser}"/> class.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        public UserWithEmailByUserIdSpecification(TKey key)
+        /// <param name="id">The identifier.</param>
+        public UserWithEmailByUserIdSpecification(TKey id) : base(id)
         {
-            this.key = key;
-        }
-
-        /// <summary>
-        /// Gets the predicate with the search function.
-        /// </summary>
-        /// <value>The predicate.</value>
-        public override Expression<Func<TUser, bool>> Predicate
-        {
-            get
-            {
-                return i => i.Id.Equals(this.key);
-            }
         }
     }
 }

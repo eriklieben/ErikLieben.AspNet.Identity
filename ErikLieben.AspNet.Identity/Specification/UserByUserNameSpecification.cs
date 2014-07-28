@@ -8,6 +8,9 @@ namespace ErikLieben.AspNet.Identity.Specification
     using System;
     using System.Linq.Expressions;
     using Data.Repository;
+
+    using ErikLieben.AspNet.Identity.Interfaces;
+
     using Microsoft.AspNet.Identity;
 
     /// <summary>
@@ -16,7 +19,7 @@ namespace ErikLieben.AspNet.Identity.Specification
     /// <typeparam name="TKey">The type of the key of the user object.</typeparam>
     /// <typeparam name="TUser">The type of the user object.</typeparam>
     public sealed class UserByUserNameSpecification<TKey, TUser> : Specification<TUser>
-        where TUser : class, IUser<TKey>
+        where TUser : class, IUserKey<TKey>
     {
         /// <summary>
         /// The username

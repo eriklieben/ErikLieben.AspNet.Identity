@@ -5,16 +5,13 @@
 // ***********************************************************************
 namespace ErikLieben.AspNet.Identity.Interfaces
 {
+    using Microsoft.AspNet.Identity;
+
     /// <summary>
     /// Interface IUserKey
     /// </summary>
     /// <typeparam name="TKey">The type of the t key.</typeparam>
-    public interface IUserKey<out TKey>
+    public interface IUserKey<out TKey> : IUser<TKey>
     {
-        /// <summary>
-        /// Gets the key.
-        /// </summary>
-        /// <value>The key.</value>
-        TKey UserId { get; }
     }
 }

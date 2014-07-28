@@ -5,13 +5,13 @@
 // ***********************************************************************
 namespace ErikLieben.AspNet.Identity.Specification
 {
-    using ErikLieben.AspNet.Identity.Interfaces;
+    using Interfaces;
 
     /// <summary>
     /// Class UserClaimByUserKeySpecification. This class cannot be inherited.
     /// </summary>
     /// <typeparam name="TKey">The type of the t key.</typeparam>
-    public sealed class UserClaimByUserKeySpecification<TKey> : UserKeyByUserIdSpecification<TKey, IUserClaim<TKey>>
+    public sealed class UserClaimByUserKeySpecification<TKey> : UserByUserIdSpecification<TKey, IUserClaim<TKey>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UserClaimByUserKeySpecification{TKey}"/> class.

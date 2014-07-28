@@ -45,7 +45,7 @@ namespace ErikLieben.AspNet.Identity.Specification
         {
             get
             {
-                return i => i.LoginProvider.Equals(this.loginKey) && i.ProviderKey.Equals(this.providerKey);
+                return i => i.LoginProvider.Equals(this.providerKey) && i.ProviderKey.Equals(this.loginKey);
             }
         }
     }

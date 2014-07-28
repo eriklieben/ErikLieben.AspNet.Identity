@@ -30,7 +30,7 @@ namespace ErikLieben.AspNet.Identity
         IUserClaimStore<TUser, TKey>,
         IUserEmailStore<TUser, TKey>
 
-        where TUser : class, IUser<TKey>
+        where TUser : class, IUserKey<TKey>
     {
         /// <summary>
         /// The unit of work factory
@@ -284,7 +284,7 @@ namespace ErikLieben.AspNet.Identity
 
                 var repositoryUser = this.repositoryFactory.Create<TUser>(uow);
                 return await Task.FromResult(
-                    repositoryUser.FindFirstOrDefault(new UserByUserIdSpecification<TKey, TUser>(userLogin.UserId), null));
+                    repositoryUser.FindFirstOrDefault(new UserByUserIdSpecification<TKey, TUser>(userLogin.Id), null));
             }
         }
 
@@ -418,7 +418,7 @@ namespace ErikLieben.AspNet.Identity
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserWithEmail<TKey>>())
             {
                 var repository = this.repositoryFactory.Create<IUserWithEmail<TKey>>(uow);
-                var userFromDb = repository.FindFirstOrDefault(new UserWithEmailByUserIdSpecification<TKey, IUserWithEmail<TKey>>(user.Id), null);
+                var userFromDb = repository.FindFirstOrDefault(new UserWithEmailByUserIdSpecification<TKey>(user.Id), null);
                 return await Task.FromResult(userFromDb.Email);
             }
         }
@@ -453,7 +453,7 @@ namespace ErikLieben.AspNet.Identity
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserEmailConfirmationStatus<TKey>>())
             {
                 var repository = this.repositoryFactory.Create<IUserEmailConfirmationStatus<TKey>>(uow);
-                var userFromDb = repository.FindFirstOrDefault(new UserEmailConfirmationStatusSpecification<TKey, TUser>(user.Id), null);
+                var userFromDb = repository.FindFirstOrDefault(new UserEmailConfirmationStatusByIdSpecification<TKey>(user.Id), null);
                 if (userFromDb == null)
                 {
                     throw new ArgumentException("unable to find item in mail confirmation repository for given user");
@@ -477,7 +477,7 @@ namespace ErikLieben.AspNet.Identity
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserEmailConfirmationStatus<TKey>>())
             {
                 var repository = this.repositoryFactory.Create<IUserEmailConfirmationStatus<TKey>>(uow);
-                var userFromDb = repository.FindFirstOrDefault(new UserEmailConfirmationStatusSpecification<TKey, TUser>(user.Id), null);
+                var userFromDb = repository.FindFirstOrDefault(new UserEmailConfirmationStatusByIdSpecification<TKey>(user.Id), null);
                 if (userFromDb == null)
                 {
                     throw new ArgumentException("unable to find item in mail confirmation repository for given user");
