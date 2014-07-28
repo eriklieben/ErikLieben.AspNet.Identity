@@ -5,18 +5,18 @@
 // ***********************************************************************
 namespace ErikLieben.AspNet.Identity
 {
+
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading;
     using System.Threading.Tasks;
+
     using Common;
     using Data.Factory;
-
-    using ErikLieben.AspNet.Identity.Interfaces;
-    using ErikLieben.Data.Projection;
-
+    using Data.Projection;
+    using Interfaces;
     using Microsoft.AspNet.Identity;
     using Specification;
 
@@ -27,7 +27,8 @@ namespace ErikLieben.AspNet.Identity
     /// <typeparam name="TKey">The type of the key of the user object.</typeparam>
     public class RepositoryIdentityStore<TUser, TKey> : 
         IUserLoginStore<TUser, TKey>,
-        IUserClaimStore<TUser, TKey>
+        IUserClaimStore<TUser, TKey>,
+        IUserEmailStore<TUser, TKey>
 
         where TUser : class, IUser<TKey>
     {
@@ -360,6 +361,155 @@ namespace ErikLieben.AspNet.Identity
                 var claimToDelete = repository.FindFirstOrDefault(new UserClaimByUserKeySpecification<TKey>(user.Id), null);
                 repository.Delete(claimToDelete);
                 await uow.CommitAsync(new CancellationToken());
+            }
+        }
+
+        /// <summary>
+        /// set email as an asynchronous operation.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="email">The email.</param>
+        /// <returns>Task that performs the update of the user.</returns>
+        /// <exception cref="System.ArgumentException">user isn't of type IUserWithEmail</exception>
+        public async Task SetEmailAsync(TUser user, string email)
+        {
+            Guard
+                .With<ArgumentNullException>
+                .Against(user == null)
+                .Say("user");
+
+            Guard
+                .With<ArgumentException>
+                .Against(string.IsNullOrWhiteSpace(email))
+                .Say("email cannot be null or an empty string");
+
+            // Transform the user to a user with email object
+            var userWithEmail = user as IUserWithEmail<TKey>;
+            if (userWithEmail == null)
+            {
+                throw new ArgumentException("user isn't of type IUserWithEmail");
+            }
+            
+            // Set the email
+            userWithEmail.Email = email;
+
+            // Store it
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserWithEmail<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserWithEmail<TKey>>(uow);
+                repository.Update(userWithEmail);
+                await uow.CommitAsync(new CancellationToken());
+            }
+        }
+
+        /// <summary>
+        /// Gets the email of a user asynchronous.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>The email of the user</returns>
+        /// <exception cref="System.ArgumentException">user isn't of type IUserWithEmail</exception>
+        public async Task<string> GetEmailAsync(TUser user)
+        {
+            Guard
+                .With<ArgumentNullException>
+                .Against(user == null)
+                .Say("user");
+
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserWithEmail<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserWithEmail<TKey>>(uow);
+                var userFromDb = repository.FindFirstOrDefault(new UserWithEmailByUserIdSpecification<TKey, IUserWithEmail<TKey>>(user.Id), null);
+                return await Task.FromResult(userFromDb.Email);
+            }
+        }
+
+        /// <summary>
+        /// Gets the email confirmed asynchronous.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>true if the email is confirmed, else false</returns>
+        /// <exception cref="System.ArgumentException">user isn't of type IUserWithEmail
+        /// or
+        /// unable to find item in mail confirmation repository for given user</exception>
+        /// <exception cref="System.InvalidOperationException">Cannot get the confirmation status of the e-mail because user doesn't have an e-mail.</exception>
+        public async Task<bool> GetEmailConfirmedAsync(TUser user)
+        {
+            Guard
+                .With<ArgumentNullException>
+                .Against(user == null)
+                .Say("user");
+
+            var userWithEmail = user as IUserWithEmail<TKey>;
+            if (userWithEmail == null)
+            {
+                throw new ArgumentException("user isn't of type IUserWithEmail");
+            }
+
+            if (string.IsNullOrWhiteSpace(userWithEmail.Email))
+            {
+                throw new InvalidOperationException("Cannot get the confirmation status of the e-mail because user doesn't have an e-mail.");
+            }
+
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserEmailConfirmationStatus<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserEmailConfirmationStatus<TKey>>(uow);
+                var userFromDb = repository.FindFirstOrDefault(new UserEmailConfirmationStatusSpecification<TKey, TUser>(user.Id), null);
+                if (userFromDb == null)
+                {
+                    throw new ArgumentException("unable to find item in mail confirmation repository for given user");
+                }
+
+                return await Task.FromResult(userFromDb.EmailConfirmed);
+            }
+
+        }
+
+        /// <summary>
+        /// set email confirmed as an asynchronous operation.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="confirmed">if set to <c>true</c> [confirmed].</param>
+        /// <returns>Task containing the storing of the given value for email confirmed.</returns>
+        /// <exception cref="System.ArgumentException">unable to find item in mail confirmation repository for given user</exception>
+        public async Task SetEmailConfirmedAsync(TUser user, bool confirmed)
+        {
+            // Get the user from the storage
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserEmailConfirmationStatus<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserEmailConfirmationStatus<TKey>>(uow);
+                var userFromDb = repository.FindFirstOrDefault(new UserEmailConfirmationStatusSpecification<TKey, TUser>(user.Id), null);
+                if (userFromDb == null)
+                {
+                    throw new ArgumentException("unable to find item in mail confirmation repository for given user");
+                }
+
+                // Change the state
+                userFromDb.EmailConfirmed = confirmed;
+
+                // Save back
+                repository.Update(userFromDb);
+                await uow.CommitAsync(new CancellationToken());
+            }
+        }
+
+        /// <summary>
+        /// find by email as an asynchronous operation.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        /// <returns>The user that belongs to the given email address</returns>
+        /// <exception cref="System.ArgumentException">unable to find item in mail confirmation repository for given user</exception>
+        public async Task<TUser> FindByEmailAsync(string email)
+        {
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserWithEmail<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserWithEmail<TKey>>(uow);
+                var user = repository.FindFirstOrDefault(new UserWithEmailByEmailSpecification<TKey, IUserWithEmail<TKey>>(email), null) as TUser;
+                if (user == null)
+                {
+                    throw new ArgumentException("unable to find item in mail confirmation repository for given user");
+                }
+
+                return await Task.FromResult(user);
             }
         }
 

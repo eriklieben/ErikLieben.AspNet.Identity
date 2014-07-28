@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// <copyright file="UserByUserIdSpecification.cs" company="Erik Lieben">
+// <copyright file="UserWithEmailByEmailSpecification.cs" company="Erik Lieben">
 //     Copyright (c) Erik Lieben. All rights reserved.
 // </copyright>
 // ***********************************************************************
@@ -8,33 +8,30 @@ namespace ErikLieben.AspNet.Identity.Specification
     using System;
     using System.Linq.Expressions;
     using Data.Repository;
-    using Microsoft.AspNet.Identity;
+    using Interfaces;
+
 
     /// <summary>
     /// User by userId specification
     /// </summary>
     /// <typeparam name="TKey">The type of the key of the user object.</typeparam>
     /// <typeparam name="TUser">The type of the user object.</typeparam>
-    public sealed class UserByUserIdSpecification<TKey, TUser> : Specification<TUser>
-        where TUser : class, IUser<TKey>
+    public sealed class UserWithEmailByEmailSpecification<TKey, TUser> : Specification<TUser>
+        where TUser : class, IUserWithEmail<TKey>
     {
-        /// <summary>
-        /// The key to search for
-        /// </summary>
-        private readonly TKey key;
-
-        public UserByUserIdSpecification()
-        {
-        }
-
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserByUserIdSpecification{TKey, TUser}"/> class.
+        /// The email
         /// </summary>
-        /// <param name="key">The key.</param>
-        public UserByUserIdSpecification(TKey key)
+        private readonly string email;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UserWithEmailByEmailSpecification{TKey, TUser}"/> class.
+        /// </summary>
+        /// <param name="email">The email.</param>
+        public UserWithEmailByEmailSpecification(string email)
         {
-            this.key = key;
+            this.email = email;
         }
 
         /// <summary>
@@ -45,7 +42,7 @@ namespace ErikLieben.AspNet.Identity.Specification
         {
             get
             {
-                return i => i.Id.Equals(this.key);
+                return i => i.Email.Equals(this.email);
             }
         }
     }

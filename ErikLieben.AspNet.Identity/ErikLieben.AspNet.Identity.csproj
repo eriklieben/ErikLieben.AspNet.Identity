@@ -53,11 +53,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Specification\UserWithEmailByEmailSpecification.cs" />
+    <Compile Include="Specification\UserWithEmailByUserIdSpecification.cs" />
+    <Compile Include="Specification\UserEmailConfirmationStatusSpecification.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="IDependencyFactory.cs" />
     <Compile Include="Interfaces\IUserClaim.cs" />
+    <Compile Include="Interfaces\IUserEmailConfirmationStatus.cs" />
     <Compile Include="Interfaces\IUserKey.cs" />
     <Compile Include="Interfaces\IUserLogin.cs" />
+    <Compile Include="Interfaces\IUserWithEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryIdentityStore.cs" />
     <Compile Include="Specification\UserClaimByUserKeySpecification.cs" />
