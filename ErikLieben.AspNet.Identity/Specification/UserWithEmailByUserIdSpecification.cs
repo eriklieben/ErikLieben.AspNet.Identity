@@ -1,5 +1,5 @@
 ﻿// ***********************************************************************
-// <copyright file="UserByUserIdSpecification.cs" company="Erik Lieben">
+// <copyright file="UserWithEmailByUserIdSpecification.cs" company="Erik Lieben">
 //     Copyright (c) Erik Lieben. All rights reserved.
 // </copyright>
 // ***********************************************************************
@@ -15,7 +15,7 @@ namespace ErikLieben.AspNet.Identity.Specification
     /// </summary>
     /// <typeparam name="TKey">The type of the key of the user object.</typeparam>
     /// <typeparam name="TUser">The type of the user object.</typeparam>
-    public sealed class UserByUserIdSpecification<TKey, TUser> : Specification<TUser>
+    public sealed class UserWithEmailByUserIdSpecification<TKey, TUser> : Specification<TUser>
         where TUser : class, IUser<TKey>
     {
         /// <summary>
@@ -23,16 +23,11 @@ namespace ErikLieben.AspNet.Identity.Specification
         /// </summary>
         private readonly TKey key;
 
-        public UserByUserIdSpecification()
-        {
-        }
-
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserByUserIdSpecification{TKey, TUser}"/> class.
+        /// Initializes a new instance of the <see cref="UserWithEmailByUserIdSpecification{TKey, TUser}"/> class.
         /// </summary>
         /// <param name="key">The key.</param>
-        public UserByUserIdSpecification(TKey key)
+        public UserWithEmailByUserIdSpecification(TKey key)
         {
             this.key = key;
         }
