@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ErikLieben.AspNet.Identity.Tests.Specification
+﻿namespace ErikLieben.AspNet.Identity.Tests.Specification
 {
-    using ErikLieben.AspNet.Identity.Specification;
+    using Identity.Specification;
 
     using Xunit;
 

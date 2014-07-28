@@ -1,13 +1,16 @@
 ﻿namespace ErikLieben.AspNet.Identity.Tests.Specification
 {
     using System;
+
+    using ErikLieben.AspNet.Identity.Interfaces;
+
     using Identity.Specification;
     using Xunit;
 
     public class UserByUserNameSpecificationTests
     {
         public class Predicate
-            : GenericSpecificationPredicateTests<UserByUserNameSpecification<int, DummyUserObject>, DummyUserObject, string>
+            : GenericSpecificationPredicateTests<UserByUserNameSpecification<int>, IUserKey<int>, string>
         {
             protected override string BadValue
             {
@@ -17,7 +20,7 @@
                 }
             }
 
-            protected override DummyUserObject DummyObject
+            protected override IUserKey<int> DummyObject
             {
                 get
                 {

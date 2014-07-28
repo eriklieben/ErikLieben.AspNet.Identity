@@ -155,11 +155,11 @@ namespace ErikLieben.AspNet.Identity
                 .Against(string.IsNullOrWhiteSpace(userName))
                 .Say("user name cannot be an empty string or null");
 
-            using (var uow = this.unitOfWorkFactory.CreateAsync<TUser>())
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserKey<TKey>>())
             {
-                var repository = this.repositoryFactory.Create<TUser>(uow);
+                var repository = this.repositoryFactory.Create<IUserKey<TKey>>(uow);
                 return await Task.FromResult(
-                    repository.FindFirstOrDefault(new UserByUserNameSpecification<TKey, TUser>(userName), null));
+                    repository.FindFirstOrDefault(new UserByUserNameSpecification<TKey>(userName), null) as TUser);
             }
         }
 
