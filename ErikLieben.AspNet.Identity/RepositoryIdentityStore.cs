@@ -70,14 +70,14 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task for the creation process of the account.</returns>
         public async Task CreateAsync(TUser user)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
-
-            using (var uow = this.unitOfWorkFactory.CreateAsync<TUser>())
+            if (user == null)
             {
-                var repository = this.repositoryFactory.Create<TUser>(uow);
+                throw new ArgumentNullException("user");
+            }
+
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserKey<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserKey<TKey>>(uow);
                 repository.Add(user);
                 await uow.CommitAsync(new CancellationToken());
             }
@@ -90,14 +90,14 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task for the update process of the user account.</returns>
         public async Task UpdateAsync(TUser user)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
-
-            using (var uow = this.unitOfWorkFactory.CreateAsync<TUser>())
+            if (user == null)
             {
-                var repository = this.repositoryFactory.Create<TUser>(uow);
+                throw new ArgumentNullException("user");
+            }
+
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserKey<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserKey<TKey>>(uow);
                 repository.Update(user);
                 await uow.CommitAsync(new CancellationToken());
             }
@@ -110,14 +110,14 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task for the delete process of the user account.</returns>
         public async Task DeleteAsync(TUser user)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
-
-            using (var uow = this.unitOfWorkFactory.CreateAsync<TUser>())
+            if (user == null)
             {
-                var repository = this.repositoryFactory.Create<TUser>(uow);
+                throw new ArgumentNullException("user");
+            }
+
+            using (var uow = this.unitOfWorkFactory.CreateAsync<IUserKey<TKey>>())
+            {
+                var repository = this.repositoryFactory.Create<IUserKey<TKey>>(uow);
                 repository.Delete(user);
                 await uow.CommitAsync(new CancellationToken());
             }
@@ -130,11 +130,6 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>The user found by the given userId</returns>
         public async Task<TUser> FindByIdAsync(TKey userId)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(userId == null)
-                .Say("userId");
-
             using (var uow = this.unitOfWorkFactory.CreateAsync<TUser>())
             {
                 var repository = this.repositoryFactory.Create<TUser>(uow);
@@ -150,10 +145,10 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>The user found by the given user name</returns>
         public async Task<TUser> FindByNameAsync(string userName)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(string.IsNullOrWhiteSpace(userName))
-                .Say("user name cannot be an empty string or null");
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                throw new ArgumentNullException("userName");
+            }
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserKey<TKey>>())
             {
@@ -193,11 +188,13 @@ namespace ErikLieben.AspNet.Identity
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserLogin<TKey>>())
             {
                 var repository = this.repositoryFactory.Create<IUserLogin<TKey>>(uow);
-                repository.Add(
-                    this.dependencyFactory.CreateObject<IUserLogin<TKey>>(
-                        user.Id, 
-                        login.LoginProvider, 
-                        login.ProviderKey));
+
+                var obj = this.dependencyFactory.CreateObject<IUserLogin<TKey>>(
+                    user.Id,
+                    login.LoginProvider,
+                    login.ProviderKey);
+
+                repository.Add(obj);
 
                 await uow.CommitAsync(new CancellationToken());
             }

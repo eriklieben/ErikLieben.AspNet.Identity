@@ -3,6 +3,8 @@
     using System;
     using Interfaces;
 
+    using Microsoft.AspNet.Identity;
+
     public class DummyUserObject : IUserKey<int>
     {
         public int Id { get; set; }
@@ -38,6 +40,12 @@
         public string LoginProvider { get; set; }
 
         public string ProviderKey { get; set; }
+
+        public static explicit operator UserLoginInfo(DummyUserLogin login)
+        {
+            return new UserLoginInfo(login.LoginProvider, login.ProviderKey);
+        }
+
     }
 
 }
