@@ -39,10 +39,11 @@
   <ItemGroup>
     <Reference Include="ErikLieben.Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=b7e1d118c492630a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ErikLieben.Data.1.0.6\lib\net45\ErikLieben.Data.dll</HintPath>
+      <HintPath>..\..\ErikLieben.Data\ErikLieben.Data\bin\Debug\ErikLieben.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Core">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.1.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,7 +54,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Specification\UserWithEmailByEmailSpecification.cs" />
+    <Compile Include="Specification\UserWithEmailByUserIdSpecification.cs" />
+    <Compile Include="Specification\UserEmailConfirmationStatusSpecification.cs" />
+    <Compile Include="Util\Guard.cs" />
+    <Compile Include="IDependencyFactory.cs" />
+    <Compile Include="Interfaces\IUserClaim.cs" />
+    <Compile Include="Interfaces\IUserEmailConfirmationStatus.cs" />
+    <Compile Include="Interfaces\IUserKey.cs" />
+    <Compile Include="Interfaces\IUserLogin.cs" />
+    <Compile Include="Interfaces\IUserWithEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RepositoryIdentityStore.cs" />
+    <Compile Include="Specification\UserClaimByUserKeySpecification.cs" />
+    <Compile Include="Specification\UserByUserIdSpecification.cs" />
+    <Compile Include="Specification\UserLoginByUserKeySpecification.cs" />
+    <Compile Include="Specification\UserByUserNameSpecification.cs" />
+    <Compile Include="Specification\UserLoginInfoByLoginProviderAndLoginKeySpecification.cs" />
+    <Compile Include="Util\Throw.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ErikLieben.AspNet.Identity.snk" />
