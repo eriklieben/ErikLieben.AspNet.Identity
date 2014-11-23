@@ -11,7 +11,7 @@ namespace ErikLieben.AspNet.Identity.Interfaces
     /// Interface IUserWithEmail
     /// </summary>
     /// <typeparam name="TKey">The type of the t key.</typeparam>
-    public interface IUserWithEmail<out TKey> : IUser<TKey>
+    public interface IUserWithEmail<out TKey> : IUserKey<TKey>
     {
         /// <summary>
         /// Gets or sets the email.

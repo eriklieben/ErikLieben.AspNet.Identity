@@ -11,7 +11,7 @@ namespace ErikLieben.AspNet.Identity.Specification
     /// Specification for user login by user key.
     /// </summary>
     /// <typeparam name="TKey">The type of the t key.</typeparam>
-    public sealed class UserLoginByUserKeySpecification<TKey> : UserKeyByUserIdSpecification<TKey, IUserLogin<TKey>>
+    public sealed class UserLoginByUserKeySpecification<TKey> : UserByUserIdSpecification<TKey, IUserLogin<TKey>>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UserLoginByUserKeySpecification{TKey}"/> class.

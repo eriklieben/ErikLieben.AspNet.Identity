@@ -8,15 +8,14 @@ namespace ErikLieben.AspNet.Identity.Specification
     using System;
     using System.Linq.Expressions;
     using Data.Repository;
-    using Microsoft.AspNet.Identity;
+    using Interfaces;
 
     /// <summary>
     /// User by userName specification.
     /// </summary>
     /// <typeparam name="TKey">The type of the key of the user object.</typeparam>
     /// <typeparam name="TUser">The type of the user object.</typeparam>
-    public sealed class UserByUserNameSpecification<TKey, TUser> : Specification<TUser>
-        where TUser : class, IUser<TKey>
+    public sealed class UserByUserNameSpecification<TKey> : Specification<IUserKey<TKey>>
     {
         /// <summary>
         /// The username
@@ -36,7 +35,7 @@ namespace ErikLieben.AspNet.Identity.Specification
         /// Gets the predicate.
         /// </summary>
         /// <value>The predicate.</value>
-        public override Expression<Func<TUser, bool>> Predicate
+        public override Expression<Func<IUserKey<TKey>, bool>> Predicate
         {
             get
             {

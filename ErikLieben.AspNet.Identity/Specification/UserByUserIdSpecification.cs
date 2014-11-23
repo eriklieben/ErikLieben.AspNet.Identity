@@ -8,44 +8,39 @@ namespace ErikLieben.AspNet.Identity.Specification
     using System;
     using System.Linq.Expressions;
     using Data.Repository;
-    using Microsoft.AspNet.Identity;
+    using Interfaces;
 
     /// <summary>
-    /// User by userId specification
+    /// Class UserByUserBaseIdSpecification.
     /// </summary>
-    /// <typeparam name="TKey">The type of the key of the user object.</typeparam>
-    /// <typeparam name="TUser">The type of the user object.</typeparam>
-    public sealed class UserByUserIdSpecification<TKey, TUser> : Specification<TUser>
-        where TUser : class, IUser<TKey>
+    /// <typeparam name="TKey">The type of the t key.</typeparam>
+    /// <typeparam name="TType">The type of the t type.</typeparam>
+    public class UserByUserIdSpecification<TKey, TType> : Specification<TType>
+        where TType : IUserKey<TKey>
     {
         /// <summary>
-        /// The key to search for
+        /// The identifier
         /// </summary>
-        private readonly TKey key;
-
-        public UserByUserIdSpecification()
-        {
-        }
-
+        private readonly TKey id;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserByUserIdSpecification{TKey, TUser}"/> class.
+        /// Initializes a new instance of the <see cref="UserByUserBaseIdSpecification{TKey, TType}"/> class.
         /// </summary>
-        /// <param name="key">The key.</param>
-        public UserByUserIdSpecification(TKey key)
+        /// <param name="id">The identifier.</param>
+        public UserByUserIdSpecification(TKey id)
         {
-            this.key = key;
+            this.id = id;
         }
 
         /// <summary>
-        /// Gets the predicate with the search function.
+        /// Gets the predicate.
         /// </summary>
         /// <value>The predicate.</value>
-        public override Expression<Func<TUser, bool>> Predicate
+        public override Expression<Func<TType, bool>> Predicate
         {
             get
             {
-                return i => i.Id.Equals(this.key);
+                return i => i.Id.Equals(this.id);
             }
         }
     }

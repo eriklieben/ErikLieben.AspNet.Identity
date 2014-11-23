@@ -5,8 +5,11 @@
 // ***********************************************************************
 namespace ErikLieben.Common
 {
+    using ErikLieben.AspNet.Identity.Util;
     using System;
     using System.Diagnostics;
+    using System.Diagnostics.Contracts;
+
 
     /// <summary>
     /// Class GuardExtensions.
@@ -34,9 +37,25 @@ namespace ErikLieben.Common
             }
 
             guard.Handled = true;
+
             //ExceptionUtil.Throw(message, guard.ExceptionType, args);
-            // TODO: Fix this
-            throw new Exception(message);
+            var constructor = guard.ExceptionType.GetConstructor(new System.Type[]
+            {
+                typeof(string), typeof(string)
+            });
+            Contract.Assume(constructor != null);
+
+            // Workaround for bad .NET framework implementation, message argument should always be first argument.
+            // Invoke it in the correct way
+            if (guard.ExceptionType.Equals(typeof(ArgumentNullException)) && args != null && args.Length == 1)
+            {
+                throw new ArgumentNullException(message);
+                //throw constructor.Invoke(new object[] { args[0], message }) as ArgumentNullException;
+            }
+            else
+            {
+                throw constructor.Invoke(new object[] { message, args.Length > 0 ? args[0] : string.Empty }) as Exception;
+            }
         }
     }
 
