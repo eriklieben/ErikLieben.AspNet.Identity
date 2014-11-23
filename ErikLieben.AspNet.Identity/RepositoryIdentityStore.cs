@@ -70,6 +70,10 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task for the creation process of the account.</returns>
         public async Task CreateAsync(TUser user)
         {
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
             if (user == null)
             {
                 throw new ArgumentNullException("user");
@@ -90,6 +94,10 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task for the update process of the user account.</returns>
         public async Task UpdateAsync(TUser user)
         {
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
             if (user == null)
             {
                 throw new ArgumentNullException("user");
@@ -110,6 +118,10 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task for the delete process of the user account.</returns>
         public async Task DeleteAsync(TUser user)
         {
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
             if (user == null)
             {
                 throw new ArgumentNullException("user");
@@ -145,6 +157,10 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>The user found by the given user name</returns>
         public async Task<TUser> FindByNameAsync(string userName)
         {
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(string.IsNullOrWhiteSpace(userName))
+            //    .Say("userName");
             if (string.IsNullOrWhiteSpace(userName))
             {
                 throw new ArgumentNullException("userName");
@@ -175,15 +191,26 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task that adds the login information to the user</returns>
         public async Task AddLoginAsync(TUser user, UserLoginInfo login)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
 
-            Guard
-                .With<ArgumentNullException>
-                .Against(login == null)
-                .Say("login");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(login == null)
+            //    .Say("login");
+
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+
+            if (login == null)
+            {
+                throw new ArgumentNullException("login");
+            }
+
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserLogin<TKey>>())
             {
@@ -195,7 +222,6 @@ namespace ErikLieben.AspNet.Identity
                     login.ProviderKey);
 
                 repository.Add(obj);
-
                 await uow.CommitAsync(new CancellationToken());
             }
         }
@@ -208,23 +234,34 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task that removes the login information from the user</returns>
         public async Task RemoveLoginAsync(TUser user, UserLoginInfo login)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
 
-            Guard
-                .With<ArgumentNullException>
-                .Against(login == null)
-                .Say("login");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(login == null)
+            //    .Say("login");
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+
+            if (login == null)
+            {
+                throw new ArgumentNullException("login");
+            }
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserLogin<TKey>>())
             {
                 var repository = this.repositoryFactory.Create<IUserLogin<TKey>>(uow);
-                repository.Delete(this.dependencyFactory.CreateObject<IUserLogin<TKey>>(
-                    user.Id, 
-                    login.LoginProvider, 
-                    login.ProviderKey));
+                var toRemove = this.dependencyFactory.CreateObject<IUserLogin<TKey>>(
+                    user.Id,
+                    login.LoginProvider,
+                    login.ProviderKey);
+
+                repository.Delete(toRemove);
                 await uow.CommitAsync(new CancellationToken());
             }
         }
@@ -236,19 +273,30 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>The list of logins for the given user</returns>
         public async Task<IList<UserLoginInfo>> GetLoginsAsync(TUser user)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserLogin<TKey>>())
             {
                 var repository = this.repositoryFactory.Create<IUserLogin<TKey>>(uow);
-                return await Task.FromResult(
-                    repository
-                        .Find(new UserLoginByUserKeySpecification<TKey>(user.Id), null)
-                        .Project().To<UserLoginInfo>()
-                        .ToList());
+                var users = repository
+                                .Find(new UserLoginByUserKeySpecification<TKey>(user.Id), null)
+                                .ToList();
+
+                // TODO: fix projection to allow property to ctor projection
+                var result = new List<UserLoginInfo>();
+                foreach(var u in users)
+                {
+                    result.Add(new UserLoginInfo(u.LoginProvider, u.ProviderKey));
+                }
+
+                return await Task.FromResult(result);
             }
         }
 
@@ -292,10 +340,14 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>List of claims belonging to this user</returns>
         public async Task<IList<Claim>> GetClaimsAsync(TUser user)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserClaim<TKey>>())
             {
@@ -316,15 +368,24 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task that performs the asynchronous adding.</returns>
         public async Task AddClaimAsync(TUser user, Claim claim)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
 
-            Guard
-                .With<ArgumentNullException>
-                .Against(claim == null)
-                .Say("claim");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(claim == null)
+            //    .Say("claim");
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+
+            if (claim == null)
+            {
+                throw new ArgumentNullException("claim");
+            }
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserClaim<TKey>>())
             {
@@ -342,15 +403,24 @@ namespace ErikLieben.AspNet.Identity
         /// <returns>Task that removes the claim from the user asynchronous.</returns>
         public async Task RemoveClaimAsync(TUser user, Claim claim)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
 
-            Guard
-                .With<ArgumentNullException>
-                .Against(claim == null)
-                .Say("claim");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(claim == null)
+            //    .Say("claim");
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+
+            if (claim == null)
+            {
+                throw new ArgumentNullException("claim");
+            }
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserClaim<TKey>>())
             {
@@ -370,15 +440,26 @@ namespace ErikLieben.AspNet.Identity
         /// <exception cref="System.ArgumentException">user isn't of type IUserWithEmail</exception>
         public async Task SetEmailAsync(TUser user, string email)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
 
-            Guard
-                .With<ArgumentException>
-                .Against(string.IsNullOrWhiteSpace(email))
-                .Say("email cannot be null or an empty string");
+            //Guard
+            //    .With<ArgumentException>
+            //    .Against(string.IsNullOrWhiteSpace(email))
+            //    .Say("email cannot be null or an empty string");
+
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                throw new ArgumentException("email cannot be null or an empty string");
+            }
+
 
             // Transform the user to a user with email object
             var userWithEmail = user as IUserWithEmail<TKey>;
@@ -407,10 +488,14 @@ namespace ErikLieben.AspNet.Identity
         /// <exception cref="System.ArgumentException">user isn't of type IUserWithEmail</exception>
         public async Task<string> GetEmailAsync(TUser user)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserWithEmail<TKey>>())
             {
@@ -431,20 +516,25 @@ namespace ErikLieben.AspNet.Identity
         /// <exception cref="System.InvalidOperationException">Cannot get the confirmation status of the e-mail because user doesn't have an e-mail.</exception>
         public async Task<bool> GetEmailConfirmedAsync(TUser user)
         {
-            Guard
-                .With<ArgumentNullException>
-                .Against(user == null)
-                .Say("user");
+            //Guard
+            //    .With<ArgumentNullException>
+            //    .Against(user == null)
+            //    .Say("user");
+            if (user == null)
+            {
+                throw new ArgumentNullException("user");
+            }
 
             var userWithEmail = user as IUserWithEmail<TKey>;
+
             if (userWithEmail == null)
             {
-                throw new ArgumentException("user isn't of type IUserWithEmail");
+                throw new ArgumentNullException("user isn't of type IUserWithEmail");
             }
 
             if (string.IsNullOrWhiteSpace(userWithEmail.Email))
             {
-                throw new InvalidOperationException("Cannot get the confirmation status of the e-mail because user doesn't have an e-mail.");
+                throw new ArgumentNullException("Cannot get the confirmation status of the e-mail because user doesn't have an e-mail.");
             }
 
             using (var uow = this.unitOfWorkFactory.CreateAsync<IUserEmailConfirmationStatus<TKey>>())

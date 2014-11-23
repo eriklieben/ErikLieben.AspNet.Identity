@@ -41,9 +41,23 @@
 
         public string ProviderKey { get; set; }
 
-        public static explicit operator UserLoginInfo(DummyUserLogin login)
+        public override bool Equals(object obj)
         {
-            return new UserLoginInfo(login.LoginProvider, login.ProviderKey);
+            var other = obj as IUserLogin<int>;
+
+            if (other != null)
+            {
+                return this.Id == other.Id && 
+                    this.ProviderKey == other.ProviderKey && 
+                    this.LoginProvider == other.LoginProvider;
+            }
+
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.LoginProvider.GetHashCode() ^ this.ProviderKey.GetHashCode() ^ this.Id.GetHashCode();
         }
 
     }
